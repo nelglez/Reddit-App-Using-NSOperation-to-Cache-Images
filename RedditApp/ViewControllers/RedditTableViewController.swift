@@ -10,38 +10,49 @@ import UIKit
 
 class RedditTableViewController: UITableViewController {
 
+    
+    let postController = PostController()
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        postController.getRedditReddit(searchTerm: "Obama") { (sucess) in
+            if sucess {
+                DispatchQueue.main.async {
+                    
+                    print(self.postController.redditData.count)
+                    self.tableView.reloadData()
+                }
+            
+            }
+        }
+        //tableView.reloadData()
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        print( postController.redditData.count)
+        return postController.redditData.count
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! RedditTableViewCell
+        
+        let post = postController.redditData[indexPath.row]
+        
+        
+        cell.redditTextView.text = post.title
 
-        // Configure the cell...
+     
 
         return cell
     }
-    */
-
+ 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+     return 150.0
+    }
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

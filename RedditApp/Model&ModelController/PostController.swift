@@ -10,6 +10,7 @@ import Foundation
 
 class PostController  {
     
+    static let shared = PostController()
     var redditData : [RedditData] = []
     let redditUrl = "https://www.reddit.com/r/trump.json"
     
@@ -27,18 +28,25 @@ class PostController  {
             
 
             guard  let arrayOFReddits = try? decoder.decode(JSONData.self , from: data) else {
-                print("there was a problem decoding JSON data into an array") ; return
+                print("there was a problem decoding JSON data into an array") ; completion(false)  ; return
             }
             
-           // let tempReddits : [RedditData]  = []
+            var  tempReddits : [RedditData]  = []
             
-             //self.subreddits = responseModel.data.children.compactMap({$0.data})
-            self.redditData = arrayOFReddits.data.childrem.compactMap({$0.data})
+            for eachItem in arrayOFReddits.data.children {
+                tempReddits.append(eachItem.data)
+            }
+            self.redditData = tempReddits
+            
+//             //self.subreddits = responseModel.data.children.compactMap({$0.data})
+//            self.redditData = arrayOFReddits.data.children.compactMap({$0.data})
             print(self.redditData[0].title)
+         print(self.redditData.count)
             
+            completion(true)
         }
             dataTask.resume()
-        
+    
     }
     
 }

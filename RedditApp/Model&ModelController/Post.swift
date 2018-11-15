@@ -14,7 +14,7 @@ struct JSONData : Codable{
 }
 
 struct  FirstData : Codable {
-    let childrem : [Child]
+    let children : [Child]
 }
 
 struct Child : Codable {
@@ -25,4 +25,5 @@ struct RedditData: Codable {
     let title : String
     let thumbnail : String
     let url : String
+     let subreddit : String
 }
