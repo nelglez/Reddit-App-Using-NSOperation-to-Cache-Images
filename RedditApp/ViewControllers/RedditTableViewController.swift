@@ -8,13 +8,13 @@
 
 import UIKit
 
-class RedditTableViewController: UITableViewController {
+class RedditTableViewController: UITableViewController, UISearchBarDelegate {
 
     
     let postController = PostController()
     override func viewDidLoad() {
         super.viewDidLoad()
-
+     searchBar.delegate = self
         postController.getRedditReddit(searchTerm: "Obama") { (sucess) in
             if sucess {
                 DispatchQueue.main.async {
@@ -25,7 +25,7 @@ class RedditTableViewController: UITableViewController {
             
             }
         }
-        //tableView.reloadData()
+   
     }
 
     // MARK: - Table view data source
@@ -96,52 +96,59 @@ class RedditTableViewController: UITableViewController {
         
     }
     
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        //define initial state(before animation)
+        let rotationTransform = CATransform3DTranslate(CATransform3DIdentity, -500, 100, 0)
+        cell.layer.transform = rotationTransform
+        
+        //define the final state (after animation)
+        UIView.animate(withDuration: 1, animations: {
+            cell.layer.transform = CATransform3DIdentity })
+        
     }
-    */
 
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let post = searchBar.text, !post.isEmpty else { return }
+        
+        searchBar.resignFirstResponder()
+        
+        postController.getRedditReddit(searchTerm: post) { (sucess) in
+            if sucess {
+                DispatchQueue.main.async {
+                    
+                    print(self.postController.redditData.count)
+                    self.tableView.reloadData()
+                }
+               
+            }
+        }
+        DispatchQueue.main.async {
+            self.searchBar.text = ""
+        }
+        let textFieldInsideSearchBar = searchBar.value(forKey: "searchField") as? UITextField
+        
+        textFieldInsideSearchBar?.textColor = .black
     }
-    */
 
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
 
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        
+        if segue.identifier == "cellToDetail" {
+            let detailVC = segue.destination as! RedditViewController
+            if let indexPath = tableView.indexPathForSelectedRow {
+              let redditData = postController.redditData[indexPath.row]
+                detailVC.redditData = redditData
+            }
+        }
+        
     }
-    */
-
-     private var cache: Cache<String, UIImage> = Cache()
+ 
+   
+    @IBOutlet weak var searchBar: UISearchBar!
+    private var cache: Cache<String, UIImage> = Cache()
     private var photoFetchQueue = OperationQueue()
     private var fetchRequests: [String : FetchPhotoOperation] = [:] {
         didSet{
@@ -149,5 +156,4 @@ class RedditTableViewController: UITableViewController {
         }
     }
    
-    
 }

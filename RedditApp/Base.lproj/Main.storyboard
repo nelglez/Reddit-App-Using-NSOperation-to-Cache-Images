@@ -78,7 +78,7 @@
                                 <connections>
                                     <outlet property="redditImageView" destination="V8D-Yb-ew5" id="OxQ-6Z-cW6"/>
                                     <outlet property="redditTextView" destination="0R3-js-nVG" id="edV-0q-BUb"/>
-                                    <segue destination="2TY-AG-boQ" kind="show" id="SYu-g1-aHZ"/>
+                                    <segue destination="2TY-AG-boQ" kind="show" identifier="cellToDetail" id="SYu-g1-aHZ"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -88,6 +88,9 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Reddits" id="xOV-pC-tji"/>
+                    <connections>
+                        <outlet property="searchBar" destination="2D4-pC-oJe" id="3if-gh-8Qu"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="42t-KY-ndp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -120,6 +123,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="sjc-WY-RoR"/>
                     </view>
+                    <connections>
+                        <outlet property="postWebView" destination="GS1-RO-MI1" id="09g-BX-5Zl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mPs-LR-8Qs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
