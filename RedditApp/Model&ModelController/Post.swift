@@ -25,5 +25,5 @@ struct RedditData: Codable {
     let title : String
     let thumbnail : String
     let url : String
-     let subreddit : String
+    let id : String
 }

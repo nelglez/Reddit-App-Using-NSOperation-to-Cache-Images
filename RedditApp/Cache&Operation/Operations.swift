@@ -79,8 +79,9 @@ class FetchPhotoOperation : ConcurrentOperation {
     override func start() {
         state = .isExecuting
         
-        guard let url = URL(string: redditData.url)     else { return }
-        print(url)
+        guard let url = URL(string: redditData.thumbnail)     else { return }
+       
+        print("This is the Image URL : - \(url)")
         dataTask = URLSession.shared.dataTask(with: url) { (data, _, error) in
             defer { self.state = .isFinished }
             if let error = error {

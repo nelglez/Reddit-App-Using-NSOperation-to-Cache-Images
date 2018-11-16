@@ -42,17 +42,60 @@ class RedditTableViewController: UITableViewController {
         
         let post = postController.redditData[indexPath.row]
         
-        
         cell.redditTextView.text = post.title
-
-     
-
-        return cell
+        
+        loadImage(forCell: cell, forItemAt: indexPath, redditData: post)
+       return cell
     }
  
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
      return 150.0
     }
+    
+    //function to lead images with operations
+    private func loadImage(forCell cell: RedditTableViewCell, forItemAt indexPath: IndexPath, redditData: RedditData ) {
+        
+        if let image = cache[redditData.id] {
+            cell.redditImageView?.image = image
+            
+        }
+        else {
+            //Operation1 : Get Photo
+            let op1 = FetchPhotoOperation(photoRef: redditData)
+            
+            //Operation2 : SavePhoto
+            let op2 = BlockOperation {
+                guard let image = op1.image else { return }
+                self.cache.cache(value: image, for: redditData.id)
+            }
+            
+            let op3 = BlockOperation {
+                
+                guard let image = op1.image else { print("Something went wrong PEREZ")
+                    ;return }
+                
+                //making sure we on the right cell
+                if indexPath == self.tableView.indexPath(for: cell) {
+                    cell.redditImageView?.image = image
+
+                }else {
+                    //Soon as we get off the cell we cancel
+                    self.fetchRequests[redditData.id]?.cancel()
+                    
+                }
+            }
+            op3.addDependency(op1)
+            op2.addDependency(op1)
+            OperationQueue.main.addOperation(op3)
+            photoFetchQueue.addOperations([op1, op2], waitUntilFinished: false)
+            
+            //fetchOperationtrigger
+            fetchRequests[redditData.id] = op1
+        }
+        
+        
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -98,4 +141,13 @@ class RedditTableViewController: UITableViewController {
     }
     */
 
+     private var cache: Cache<String, UIImage> = Cache()
+    private var photoFetchQueue = OperationQueue()
+    private var fetchRequests: [String : FetchPhotoOperation] = [:] {
+        didSet{
+            print("Start fetching Images")
+        }
+    }
+   
+    
 }
